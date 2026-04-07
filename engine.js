@@ -1,41 +1,37 @@
-// Dropix Engine v1.0.4 - Mobile Graphics Optimization
-async function checkHumanScore() {
+// Dropix Engine v1.0.8 - Advanced Hardware Telemetry
+async function checkHumanScore(event) {
     let score = 0;
 
-    // 1. Check de GPU (Robôs usam simuladores de software)
+    // 1. A PROVA REAL: O clique é confiável? (isTrusted)
+    // Se o evento foi gerado por um humano, isTrusted é true.
+    if (event && event.isTrusted) {
+        score += 50;
+    } else {
+        console.warn("Alerta: Clique de software detectado.");
+        return 0; // Se não for isTrusted, já mata o score aqui.
+    }
+
+    // 2. Check de Coordenadas (Robôs clicam no centro perfeito ou 0,0)
+    // Humanos clicam em pixels quebrados (ex: 142.54, 31.12)
+    if (event.clientX !== 0 && event.clientY !== 0) {
+        const isTooPerfect = Number.isInteger(event.clientX) && Number.isInteger(event.clientY);
+        if (!isTooPerfect) {
+            score += 20;
+        }
+    }
+
+    // 3. Check de GPU (Hardware Real)
     const canvas = document.createElement('canvas');
     const gl = canvas.getContext('webgl');
     if (gl) {
         const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
         const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_ID);
-        // Se NÃO for um renderizador genérico de software, soma pontos
         if (!/swiftshader|google|llvmpipe/i.test(renderer)) {
-            score += 40;
-        }
-    }
-
-    // 2. Check de Bateria (O que discutimos antes)
-    if ('getBattery' in navigator) {
-        const battery = await navigator.getBattery();
-        // Robôs geralmente dão 100% e carregando, ou Infinity
-        if (battery.level > 0 && battery.level < 1 && battery.dischargingTime !== Infinity) {
             score += 30;
         }
     }
 
-    // 3. Telemetria de Toque (Mobile Only)
-    // Vamos esperar um micro-movimento para validar
-    return new Promise((resolve) => {
-        const validateTouch = () => {
-            score += 30;
-            window.removeEventListener('touchstart', validateTouch);
-            resolve(score);
-        };
-        window.addEventListener('touchstart', validateTouch);
-        
-        // Se em 3 segundos não houver toque, resolve com o que tem
-        setTimeout(() => resolve(score), 3000);
-    });
+    return score;
 }
 
-console.log("Módulo Editorial Carregado.");
+console.log("Módulo de Autenticação Dropix Ativo.");
