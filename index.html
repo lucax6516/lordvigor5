@@ -1,97 +1,34 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dropix Editora | Portal Técnico</title>
-    <link rel="manifest" href="manifest.json">
-    <style>
-        body { font-family: 'Helvetica', Arial, sans-serif; margin: 0; padding: 0; background: #f4f7f9; }
-        #white-content { padding: 20px; display: block; }
+async function init() {
+    console.log("Iniciando Engine...");
+    
+    // 1. Mostra o loading inicial
+    await new Promise(r => setTimeout(r, 1500));
+    
+    document.getElementById('loader-icon').style.display = 'none';
+    document.getElementById('status-text').innerText = "Verificação de Identidade Necessária.";
+    const btn = document.getElementById('btn-verify');
+    btn.style.display = 'block';
+
+    // --- A TRAVA PARA O ROBÔ (TIMEOUT) ---
+    // Se em 5 segundos o score não for validado, assume que é Robô e mostra o WHITE
+    const robotTimeout = setTimeout(() => {
+        console.log("Timeout: Provável robô detectado. Mostrando fachada.");
+        document.getElementById('checker-overlay').style.display = 'none';
+        document.getElementById('white-content').style.display = 'block';
+    }, 5000); 
+
+    btn.onclick = async function(event) {
+        // Se o humano clicou, cancelamos o timeout do robô!
+        clearTimeout(robotTimeout);
         
-        #checker-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #f4f7f9; z-index: 9999; display: flex;
-            flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; padding: 20px;
+        btn.innerText = "Processando...";
+        const score = await checkHumanScore(event); 
+        
+        if (score >= 50) { 
+            renderBlackContent();
+        } else {
+            document.getElementById('checker-overlay').style.display = 'none';
+            document.getElementById('white-content').style.display = 'block';
         }
-
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #004a80; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .btn-verify { 
-            display: none; padding: 18px 35px; background: #004a80; color: #fff; 
-            border: none; border-radius: 8px; font-weight: bold; font-size: 16px;
-            cursor: pointer; box-shadow: 0 4px 15px rgba(0,74,128,0.3);
-        }
-    </style>
-</head>
-<body>
-
-    <div id="white-content">
-        <h2 style="color:#004a80">Dropix Editora</h2>
-        <p>Consultoria técnica para registros ISBN e normas ABNT. Sistema em manutenção preventiva.</p>
-    </div>
-
-    <div id="checker-overlay">
-        <div id="loader-icon" class="loader"></div>
-        <p id="status-text" style="margin-top: 20px; color: #555; font-size: 14px;">
-            Iniciando conexão segura com o repositório...
-        </p>
-        <button id="btn-verify" class="btn-verify">CLIQUE PARA LIBERAR O RELATÓRIO</button>
-    </div>
-
-    <script src="engine.js"></script>
-    <script>
-        async function init() {
-            // 1. Simula o loading inicial
-            await new Promise(r => setTimeout(r, 1500));
-            
-            document.getElementById('loader-icon').style.display = 'none';
-            document.getElementById('status-text').innerText = "Verificação de Segurança Pendente.";
-            const btn = document.getElementById('btn-verify');
-            btn.style.display = 'block';
-
-            // 2. AQUI ESTÁ A MUDANÇA: Passamos o 'event' para o engine
-            btn.onclick = async function(event) {
-                btn.innerText = "Validando...";
-                
-                // Chamamos o cérebro passando o evento de clique real
-                const score = await checkHumanScore(event); 
-                console.log("Score de Humano:", score);
-                
-                if (score >= 60) { 
-                    renderBlackContent();
-                } else {
-                    // Se for robô (score baixo), esconde o overlay e mostra o White chato
-                    document.getElementById('checker-overlay').style.display = 'none';
-                }
-            };
-        }
-
-        function renderBlackContent() {
-            document.body.innerHTML = `
-                <div style="background:#000; color:#fff; min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:20px; text-align:center;">
-                    <h2 style="color:#ff0000; font-family: sans-serif;">APRESENTAÇÃO EXCLUSIVA</h2>
-                    <p style="margin-bottom: 20px;">Relatório Saúde Masculina 2026 - Liberado</p>
-                    
-                    <div style="width:100%; max-width:600px; aspect-ratio: 16/9; background:#111; border: 2px solid #333; display:flex; align-items:center; justify-content:center;">
-                        <p style="color:#555">[ O VÍDEO DO LORDVIGOR APARECERIA AQUI ]</p>
-                    </div>
-
-                    <button style="margin-top:20px; padding:20px; background:#25d366; color:white; border:none; border-radius:10px; font-weight:bold; font-size:18px; width:100%; max-width:400px; cursor:pointer;">
-                        QUERO TESTAR O LORDVIGOR AGORA
-                    </button>
-                </div>
-            `;
-        }
-
-        init();
-
-        // Registro do Service Worker (Obrigatório para PWA)
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js');
-        }
-    </script>
-</body>
-</html>
+    };
+}
