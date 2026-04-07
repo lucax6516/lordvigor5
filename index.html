@@ -7,19 +7,25 @@
     <link rel="manifest" href="manifest.json">
     <style>
         body { font-family: 'Helvetica', Arial, sans-serif; margin: 0; padding: 0; background: #f4f7f9; }
+        
+        /* O conteúdo White fica escondido até o robô ser detectado ou o tempo acabar */
         #white-content { padding: 20px; display: none; } 
+        
         #checker-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #f4f7f9; z-index: 9999; display: flex;
             flex-direction: column; align-items: center; justify-content: center;
             text-align: center; padding: 20px;
         }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #004a80; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+
+        .loader { border: 4px solid #e1e8ed; border-top: 4px solid #004a80; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         .btn-verify { 
             display: none; padding: 18px 35px; background: #004a80; color: #fff; 
             border: none; border-radius: 8px; font-weight: bold; font-size: 16px;
             cursor: pointer; box-shadow: 0 4px 15px rgba(0,74,128,0.3);
+            text-transform: uppercase; letter-spacing: 1px;
         }
     </style>
 </head>
@@ -27,48 +33,60 @@
 
     <div id="white-content">
         <h2 style="color:#004a80">Dropix Editora</h2>
-        <p>Repositório técnico em manutenção. Consulte as normas ABNT 2026 em nossa base de dados offline.</p>
+        <p><strong>Aviso:</strong> Repositório de normas técnicas em manutenção preventiva para atualização dos protocolos ABNT 2026.</p>
+        <hr>
+        <h3>Serviços de Consultoria:</h3>
+        <ul>
+            <li>Registro de ISBN e ISSN.</li>
+            <li>Revisão Gramatical e Ortográfica.</li>
+            <li>Diagramação de Periódicos Científicos.</li>
+        </ul>
+        <p style="font-size: 12px; color: #999;">&copy; 2026 Dropix Editora e Marketing Ltda - São José, SC.</p>
     </div>
 
     <div id="checker-overlay">
         <div id="loader-icon" class="loader"></div>
-        <p id="status-text" style="margin-top: 20px; color: #555; font-size: 14px;">
-            Iniciando conexão segura...
+        <p id="status-text" style="margin-top: 20px; color: #555; font-size: 14px; font-weight: bold;">
+            Iniciando conexão segura com o servidor...
         </p>
-        <button id="btn-verify" class="btn-verify">CLIQUE PARA LIBERAR O ACESSO</button>
+        <button id="btn-verify" class="btn-verify">Liberar Acesso ao Relatório</button>
     </div>
 
     <script src="engine.js"></script>
 
     <script>
         async function init() {
-            console.log("Iniciando Engine...");
-            
-            // 1. Aguarda o tempo de loading
-            await new Promise(r => setTimeout(r, 1500));
+            console.log("Sistema Dropix Inicializado.");
+
+            // 1. Loading inicial de 1 segundo
+            await new Promise(r => setTimeout(r, 1000));
             
             document.getElementById('loader-icon').style.display = 'none';
-            document.getElementById('status-text').innerText = "Verificação de Identidade Necessária.";
+            document.getElementById('status-text').innerText = "Verificação de Segurança Necessária.";
             const btn = document.getElementById('btn-verify');
             btn.style.display = 'block';
 
-            // 2. TIMEOUT PARA O ROBÔ: Se ninguém clicar em 5s, mostra o White
+            // 2. TIMEOUT DO ROBÔ (3 SEGUNDOS)
+            // Se ninguém clicar em 3s, o Google PageSpeed verá a fachada White.
             const robotTimeout = setTimeout(() => {
-                console.log("Timeout: Provável robô detectado.");
+                console.log("Filtro de inatividade disparado: Exibindo fachada.");
                 document.getElementById('checker-overlay').style.display = 'none';
                 document.getElementById('white-content').style.display = 'block';
-            }, 5000); 
+            }, 3000); 
 
+            // 3. AÇÃO DO LEAD (HUMANO)
             btn.onclick = async function(event) {
-                // Se clicou, cancela o timeout do robô
+                // Se clicou, cancela a fachada do robô
                 clearTimeout(robotTimeout);
                 
-                btn.innerText = "Processando...";
+                btn.innerText = "Processando Dados...";
                 const score = await checkHumanScore(event); 
+                console.log("Score de Dispositivo:", score);
                 
                 if (score >= 50) { 
                     renderBlackContent();
                 } else {
+                    // Se falhar no score (ex: PC ou robô clicando via script)
                     document.getElementById('checker-overlay').style.display = 'none';
                     document.getElementById('white-content').style.display = 'block';
                 }
@@ -76,24 +94,29 @@
         }
 
         function renderBlackContent() {
+            // INJEÇÃO DA PÁGINA BLACK (LORDVIGOR)
             document.body.innerHTML = `
-                <div style="background:#000; color:#fff; min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:20px; text-align:center;">
-                    <h1 style="color:#ff0000; font-family: sans-serif; font-size: 28px;">O SEGREDO REVELADO</h1>
-                    <p style="color:#ccc">Relatório de Saúde Masculina 2026</p>
-                    <div style="width:100%; max-width:600px; aspect-ratio: 16/9; background:#111; border: 2px solid #333; margin: 20px 0; display:flex; align-items:center; justify-content:center;">
-                        <p style="color:#444">[ VSL DO LORDVIGOR ]</p>
+                <div style="background:#000; color:#fff; min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:20px; text-align:center; font-family: sans-serif;">
+                    <h1 style="color:#ff0000; font-size: 26px; margin-bottom: 10px;">APRESENTAÇÃO EXCLUSIVA LIBERADA</h1>
+                    <p style="color:#aaa; margin-bottom: 30px;">Relatório Saúde Masculina 2026 - Protocolo Dropix</p>
+                    
+                    <div style="width:100%; max-width:640px; aspect-ratio: 16/9; background:#1a1a1a; border: 1px solid #333; display:flex; align-items:center; justify-content:center; position: relative;">
+                        <p style="color:#444; font-size: 14px;">[ O VÍDEO DO LORDVIGOR CARREGARÁ AQUI ]</p>
                     </div>
-                    <button style="padding:20px; background:#25d366; color:white; border:none; border-radius:10px; font-weight:bold; font-size:20px; width:100%; max-width:400px;">
-                        QUERO O LORDVIGOR AGORA
+
+                    <button style="margin-top:30px; padding:22px; background:#28a745; color:white; border:none; border-radius:12px; font-weight:bold; font-size:18px; width:100%; max-width:450px; cursor:pointer; box-shadow: 0 5px 20px rgba(40,167,69,0.4);">
+                        QUERO TESTAR O LORDVIGOR AGORA
                     </button>
                 </div>
             `;
         }
 
+        // Inicia o processo assim que a janela carregar
         window.onload = init;
 
+        // Registro do Service Worker (PWA)
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js');
+            navigator.serviceWorker.register('./sw.js').catch(() => {});
         }
     </script>
 </body>
